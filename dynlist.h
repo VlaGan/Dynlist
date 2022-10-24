@@ -1,4 +1,4 @@
-#pragma once
+// dynlist class
 
 template <typename type> class dynlist {
 private:
@@ -29,9 +29,10 @@ public:
     type max(int &index);
     type min();
     type min(int& index);
-    virtual void sort();
+    void sort();
 
-    virtual void reverse();
+    void reverse();
+    void set();
 
 
 private:
@@ -235,4 +236,13 @@ template <typename type> void dynlist<type>::reverse() {
         rlist[i] = *at(-(i + 1));
     delete[] dlist;
     dlist = rlist;
+}
+
+// minus speed -- for first time
+template <typename type> void dynlist<type>::set() {
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+            if (i != j)
+                if (dlist[i] == dlist[j])
+                    pop_index(j);
 }
