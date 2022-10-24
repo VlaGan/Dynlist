@@ -1,4 +1,5 @@
 #pragma once
+
 template <typename type> class dynlist {
 private:
     int size;
@@ -8,8 +9,8 @@ public:
     dynlist(const int new_size);
     ~dynlist();
 
-    type* operator[](const int index);
-    type* at(const int index);
+    inline type* operator[](const int index);
+    inline type* at(const int index);
 
     inline const int len() const;
     virtual void print();
@@ -29,8 +30,14 @@ public:
     type min() const;
     type min(int &index) const;
     virtual void sort();
-    virtual void sort(const bool maximum);
+
+    virtual void reverse();
+
+
+private:
+    void QuickSort(size_t const left, size_t const right);
 };
+
 
 
 template <typename type> inline dynlist<type>::dynlist(const int new_size) {
@@ -43,22 +50,19 @@ template <typename type> dynlist<type>::~dynlist() {
     dlist = nullptr;
 }
 
-template <typename type> type* dynlist<type>::operator[](const int index) {
+template <typename type> inline type* dynlist<type>::operator[](const int index) {
     if (index < 0)
         return dlist + size + index;
     return dlist + index;
 }
 
-template <typename type> type* dynlist<type>::at(const int index) {
+template <typename type> inline type* dynlist<type>::at(const int index) {
     if (index < 0)
         return dlist + size + index;
     return dlist + index;
 }
 
-template <typename type>
-inline const int dynlist<type>::len() const {
-    return size;
-}
+template <typename type> inline const int dynlist<type>::len() const { return size; }
 
 template <typename type> void dynlist<type>::print() {
     for (int i = 0; i < size; i++)
@@ -71,14 +75,14 @@ template <typename type> void dynlist<type>::push_back(type value) {
     size++;
     type* ndlist = new type[size];
     for (int i = 0; i < size - 1; i++)
-        ndlist[i] = dlist[i]; 
+        ndlist[i] = dlist[i];
     ndlist[size - 1] = value;
     delete[] dlist;
     dlist = ndlist;
 }
 
 template <typename type> void dynlist<type>::push_front(type value) {
-    type* new_mas = new type[size + 1];
+    type* new_mas = new type[size + 1]{};
     new_mas[0] = value;
     for (int i = 1; i < size; i++)
         new_mas[i] = dlist[i - 1];
@@ -138,7 +142,7 @@ template <typename type> void dynlist<type>::pop_index(const int index) {
     dlist = new_mas;
 }
 
-template <typename type> void dynlist<type>::resize(const int new_size) {    
+template <typename type> void dynlist<type>::resize(const int new_size) {
     type* ndlist = new type[new_size]{};
     for (int i = 0; i < new_size; i++) {
         if (i <= size - 1)
@@ -187,34 +191,40 @@ template <typename type> type dynlist<type>::min(int& index) const {
     return min;
 }
 
-template <typename type> void dynlist<type>::sort() {
-    dynlist<type> sorted(size);
-    for (int i = 0; i < size; i++)
-        *sorted[i] = dlist[i];
 
-    for (int i = 0; i < size; i++) {
-        int min_index{};
-        dlist[i] = sorted.min(min_index);
-        sorted.pop_index(min_index);
+template <typename type> void dynlist<type>::QuickSort(size_t const left, size_t const right) {
+    static type temp;
+    size_t i = left, j = right;
+    type pivot = dlist[left + ((right - left + 1) >> 1)];
+
+    while (i <= j)
+    {
+        while (dlist[i] < pivot) ++i;
+        while (dlist[j] > pivot) --j;
+
+        if (i <= j)
+        {
+            temp = dlist[i];
+            dlist[i] = dlist[j];
+            dlist[j] = temp;
+            ++i;
+            --j;
+        }
     }
+    if (j > left)
+        QuickSort(left, j);
+    if (i < right)
+        QuickSort(i, right);
 }
 
-// true = min->max else max->min
-template <typename type> void dynlist<type>::sort(const bool maximum) {
-    dynlist<type> sorted(size);
+template <typename type> void dynlist<type>::sort() {
+    QuickSort(0, size - 1);
+}
+
+template <typename type> void dynlist<type>::reverse() {
+    type* rlist = new type[size];
     for (int i = 0; i < size; i++)
-        *sorted[i] = dlist[i];
-    if (maximum) {
-        for (int i = 0; i < size; i++) {
-            int min_index{};
-            dlist[i] = sorted.min(min_index);
-            sorted.pop_index(min_index);
-        }
-    }else{
-        for (int i = 0; i < size; i++) {
-            int max_index{};
-            dlist[i] = sorted.max(max_index);
-            sorted.pop_index(max_index);
-        }
-    }
+        rlist[i] = *at(-(i + 1));
+    delete[] dlist;
+    dlist = rlist;
 }
