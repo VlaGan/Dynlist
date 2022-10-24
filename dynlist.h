@@ -13,22 +13,22 @@ public:
     inline type* at(const int index);
 
     inline const int len() const;
-    virtual void print();
+    void print();
 
-    virtual void push_back(type value);
-    virtual void push_front(type value);
-    virtual void push_index(type value, const int index);
+    void push_back(type value);
+    void push_front(type value);
+    void push_index(int index, type value);
 
-    virtual void pop_back();
-    virtual void pop_front();
-    virtual void pop_index(const int index);
+    void pop_back();
+    void pop_front();
+    void pop_index(int index);
 
-    virtual void resize(const int new_size);
+    void resize(const int new_size);
     
-    type max() const;
-    type max(int &index) const;
-    type min() const;
-    type min(int &index) const;
+    type max();
+    type max(int &index);
+    type min();
+    type min(int& index);
     virtual void sort();
 
     virtual void reverse();
@@ -91,11 +91,14 @@ template <typename type> void dynlist<type>::push_front(type value) {
     dlist = new_mas;
 }
 
-template <typename type> void dynlist<type>::push_index(type value, const int index) {
-    if (index > size)
+template <typename type> void dynlist<type>::push_index(int index, type value) {
+    if (index > 0 && index > size - 1)
         return;
-    else if (index == -1)
-        return push_back(value);
+    else if (index < 0 && abs(index) > size+1)
+        return;
+
+    if (index < 0)
+        index = size + index + 1;
 
     size++;
     type* new_mas = new type[size];
@@ -129,7 +132,15 @@ template <typename type> void dynlist<type>::pop_front() {
     dlist = new_mas;
 }
 
-template <typename type> void dynlist<type>::pop_index(const int index) {
+template <typename type> void dynlist<type>::pop_index(int index) {
+    if (index > 0 && index > size - 1)
+        return;
+    else if (index < 0 && abs(index) > size)
+        return;
+
+    if (index < 0)
+        index = size + index;
+
     type* new_mas = new type[size - 1];
     for (int i = 0; i < size - 1; i++) {
         if (i < index)
@@ -155,7 +166,7 @@ template <typename type> void dynlist<type>::resize(const int new_size) {
     dlist = ndlist;
 }
 
-template <typename type> type dynlist<type>::max() const {
+template <typename type> type dynlist<type>::max(){
     type max = dlist[0];
     for (int i = 0; i < size; i++)
         if (max < dlist[i])
@@ -163,7 +174,7 @@ template <typename type> type dynlist<type>::max() const {
     return max;
 }
 
-template <typename type> type dynlist<type>::max(int& index) const {
+template <typename type> type dynlist<type>::max(int& index){
     type max = dlist[0];
     for (int i = 0; i < size; i++)
         if (max < dlist[i]) {
@@ -173,7 +184,7 @@ template <typename type> type dynlist<type>::max(int& index) const {
     return max;
 }
 
-template <typename type> type dynlist<type>::min() const {
+template <typename type> type dynlist<type>::min(){
     type min = dlist[0];
     for (int i = 0; i < size; i++)
         if (min > dlist[i])
@@ -181,7 +192,7 @@ template <typename type> type dynlist<type>::min() const {
     return min;
 }
 
-template <typename type> type dynlist<type>::min(int& index) const {
+template <typename type> type dynlist<type>::min(int& index){
     type min = dlist[0];
     for (int i = 0; i < size; i++)
         if (min > dlist[i]) {
@@ -191,19 +202,16 @@ template <typename type> type dynlist<type>::min(int& index) const {
     return min;
 }
 
-
 template <typename type> void dynlist<type>::QuickSort(size_t const left, size_t const right) {
     static type temp;
     size_t i = left, j = right;
-    type pivot = dlist[left + ((right - left + 1) >> 1)];
+    type pt = dlist[left + ((right - left + 1) >> 1)];
 
-    while (i <= j)
-    {
-        while (dlist[i] < pivot) ++i;
-        while (dlist[j] > pivot) --j;
+    while (i <= j){
+        while (dlist[i] < pt) ++i;
+        while (dlist[j] > pt) --j;
 
-        if (i <= j)
-        {
+        if (i <= j){
             temp = dlist[i];
             dlist[i] = dlist[j];
             dlist[j] = temp;
