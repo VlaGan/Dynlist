@@ -11,6 +11,10 @@ public:
 
     inline type* operator[](const int index);
     inline type* at(const int index);
+    void operator+=(const type value);
+    void operator-=(const type value);
+    void operator*=(const type value);
+    void operator/=(const type value);
 
     inline const int len() const;
     void print();
@@ -61,6 +65,26 @@ template <typename type> inline type* dynlist<type>::at(const int index) {
     if (index < 0)
         return dlist + size + index;
     return dlist + index;
+}
+
+template <typename type> void dynlist<type>::operator+=(const type value) {
+    for (int i = 0; i < size; i++)
+        dlist[i] += value;
+}
+
+template <typename type> void dynlist<type>::operator-=(const type value) {
+    for (int i = 0; i < size; i++)
+        dlist[i] -= value;
+}
+
+template <typename type> void dynlist<type>::operator*=(const type value) {
+    for (int i = 0; i < size; i++)
+        dlist[i] *= value;
+}
+
+template <typename type> void dynlist<type>::operator/=(const type value) {
+    for (int i = 0; i < size; i++)
+        dlist[i] /= value;
 }
 
 template <typename type> inline const int dynlist<type>::len() const { return size; }
