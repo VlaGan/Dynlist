@@ -1,15 +1,16 @@
 ﻿#include <iostream>
 #include "dynlist.h"
+#include <string>
+#include <vector>
 
 int main() {
-	const int size = 100000;
-	dynlist<int> mass(size);
-	for (int i = 0; i < size; i++)
-		*mass[-(i+1)] = 1+rand() % 32768;
+	const int size = 10;
+	dynlist<char> m1(size), m2(size);
+	for (int i = 0; i < m1.len(); i++)
+		m1[i] = 1 + rand() % 100;
 
-	//mass.print();
-	mass.sort();
-	//mass.print();
+	std::cout << false ? m1 == m2 : true;
+
 
 	return 0;
 }
