@@ -5,11 +5,9 @@ private:
     int size;
     type* dlist;
 
-    type* dbackup;
-    int dbackup_size;
-
 public:
     dynlist(const int new_size);
+    dynlist(const dynlist& dlistcopy);
     ~dynlist();
 
     inline type* operator[](const int index);
@@ -41,28 +39,27 @@ public:
     void reverse();
     void set();
 
-    void backup();
-    void restore();
-
-
 private:
     void QuickSort(size_t const left, size_t const right);
 };
 
 
 
-template <typename type> inline dynlist<type>::dynlist(const int new_size) {
-    size = new_size;
-    dlist = new type[size]{};
-    dbackup_size = 0;
-    dbackup = new type[dbackup_size]{};
+template <typename type> dynlist<type>::dynlist(const int new_size) {
+    this->size = new_size;
+    this->dlist = new type[size]{};
+}
+
+template <typename type> dynlist<type>::dynlist(const dynlist<type>& dlistcopy) {
+    this->size = dlistcopy.size;
+    this->dlist = new type[dlistcopy.size];
+    for (int i = 0; i < dlistcopy.size; i++)
+        this->dlist[i] = dlistcopy.dlist[i];
 }
 
 template <typename type> dynlist<type>::~dynlist() {
     delete[] dlist;
     dlist = nullptr;
-    delete[] dbackup;
-    dbackup = nullptr;
 }
 
 template <typename type> inline type* dynlist<type>::operator[](const int index) {
@@ -279,32 +276,4 @@ template <typename type> void dynlist<type>::set() {
             if (i != j)
                 if (dlist[i] == dlist[j])
                     pop_index(j);
-}
-
-
-template <typename type> void dynlist<type>::backup() {
-    if (dbackup_size == 0) {
-        dbackup_size = size;
-        type* ndlist = new type[dbackup_size];
-        for (int i = 0; i < dbackup_size; i++)
-            ndlist[i] = dlist[i];
-        delete[] dbackup;
-        dbackup = ndlist;
-    }
-    else {
-        delete[] dbackup;
-        dbackup = nullptr;
-        dbackup_size = 0;
-        return backup();
-    }
-}
-
-template <typename type> void dynlist<type>::restore() {
-    type* ndlist = new type[dbackup_size];
-    for (int i = 0; i < dbackup_size; i++)
-        ndlist[i] = dbackup[i];
-
-    size = dbackup_size;
-    delete[] dlist;
-    dlist = ndlist;
 }
