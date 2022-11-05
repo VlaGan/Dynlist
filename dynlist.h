@@ -7,17 +7,16 @@ private:
 
 public:
     dynlist(const int new_size);
-    dynlist(const dynlist& dlistcopy);
+    dynlist(const dynlist& other_dlist);
     ~dynlist();
 
-    inline type* operator[](const int index);
-    inline type* at(const int index);
-    void operator+=(const type value);
-    void operator-=(const type value);
-    void operator*=(const type value);
-    void operator/=(const type value);
+    inline type& operator[](const int index);
+    inline type& at(const int index);
+    dynlist<type>& operator=(const dynlist<type>& other_dlist);
+    bool operator==(const dynlist<type>& other_dlist);
+    bool operator!=(const dynlist<type>& other_dlist);
 
-    inline const int len() const;
+    inline int len() const;
     void print();
 
     void push_back(type value);
@@ -50,11 +49,11 @@ template <typename type> dynlist<type>::dynlist(const int new_size) {
     this->dlist = new type[size]{};
 }
 
-template <typename type> dynlist<type>::dynlist(const dynlist<type>& dlistcopy) {
-    this->size = dlistcopy.size;
-    this->dlist = new type[dlistcopy.size];
-    for (int i = 0; i < dlistcopy.size; i++)
-        this->dlist[i] = dlistcopy.dlist[i];
+template <typename type> dynlist<type>::dynlist(const dynlist<type>& other_dlist) {
+    this->size = other_dlist.size;
+    this->dlist = new type[other_dlist.size];
+    for (int i = 0; i < other_dlist.size; i++)
+        this->dlist[i] = other_dlist.dlist[i];
 }
 
 template <typename type> dynlist<type>::~dynlist() {
@@ -62,39 +61,45 @@ template <typename type> dynlist<type>::~dynlist() {
     dlist = nullptr;
 }
 
-template <typename type> inline type* dynlist<type>::operator[](const int index) {
+template <typename type> inline type& dynlist<type>::operator[](const int index) {
     if (index < 0)
-        return dlist + size + index;
-    return dlist + index;
+        return *(dlist + size + index);
+    return *(dlist + index);
 }
 
-template <typename type> inline type* dynlist<type>::at(const int index) {
+template <typename type> inline type& dynlist<type>::at(const int index) {
     if (index < 0)
-        return dlist + size + index;
-    return dlist + index;
+        return *(dlist + size + index);
+    return *(dlist + index);
 }
 
-template <typename type> void dynlist<type>::operator+=(const type value) {
-    for (int i = 0; i < size; i++)
-        dlist[i] += value;
+template <typename type> dynlist<type>& dynlist<type>::operator=(const dynlist<type>& other_dlist) {
+    delete[] this->dlist;
+    this->size = other_dlist.size;
+    this->dlist = new type[other_dlist.size];
+    for (int i = 0; i < other_dlist.size; i++)
+        this->dlist[i] = other_dlist.dlist[i];
+
+    return *this;
 }
 
-template <typename type> void dynlist<type>::operator-=(const type value) {
-    for (int i = 0; i < size; i++)
-        dlist[i] -= value;
+template <typename type> bool dynlist<type>::operator==(const dynlist<type>& other_dlist) {
+    if (this->size != other_dlist.size)
+        return false;
+
+    for (int i = 0; i < this->size; i++) {
+        if (this->dlist[i] != other_dlist.dlist[i])
+            return false;
+    }
+
+    return true;
 }
 
-template <typename type> void dynlist<type>::operator*=(const type value) {
-    for (int i = 0; i < size; i++)
-        dlist[i] *= value;
+template <typename type> bool dynlist<type>::operator!=(const dynlist<type>& other_dlist) {
+    return !operator==(other_dlist);
 }
 
-template <typename type> void dynlist<type>::operator/=(const type value) {
-    for (int i = 0; i < size; i++)
-        dlist[i] /= value;
-}
-
-template <typename type> inline const int dynlist<type>::len() const { return size; }
+template <typename type> inline int dynlist<type>::len() const { return size; }
 
 template <typename type> void dynlist<type>::print() {
     for (int i = 0; i < size; i++)
@@ -264,7 +269,7 @@ template <typename type> void dynlist<type>::sort() {
 template <typename type> void dynlist<type>::reverse() {
     type* rlist = new type[size];
     for (int i = 0; i < size; i++)
-        rlist[i] = *at(-(i + 1));
+        rlist[i] = at(-(i + 1));
     delete[] dlist;
     dlist = rlist;
 }
