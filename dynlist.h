@@ -8,11 +8,14 @@ private:
 public:
     dynlist(const int new_size);
     dynlist(const dynlist& other_dlist);
+    dynlist(const std::initializer_list<type> odlist);
     ~dynlist();
 
     inline type& operator[](const int index);
     inline type& at(const int index);
+
     dynlist<type>& operator=(const dynlist<type>& other_dlist);
+    dynlist<type>& operator=(const std::initializer_list<type> odlist);
     bool operator==(const dynlist<type>& other_dlist);
     bool operator!=(const dynlist<type>& other_dlist);
 
@@ -42,8 +45,6 @@ private:
     void QuickSort(size_t const left, size_t const right);
 };
 
-
-
 template <typename type> dynlist<type>::dynlist(const int new_size) {
     this->size = new_size;
     this->dlist = new type[size]{};
@@ -54,6 +55,18 @@ template <typename type> dynlist<type>::dynlist(const dynlist<type>& other_dlist
     this->dlist = new type[other_dlist.size];
     for (int i = 0; i < other_dlist.size; i++)
         this->dlist[i] = other_dlist.dlist[i];
+}
+
+template <typename type> dynlist<type>::dynlist(const std::initializer_list<type> odlist) {
+    this->size = 0;
+    for (auto& v : odlist)
+        this->size++;
+
+    this->dlist = new type[this->size];
+
+    int i = 0;
+    for (auto& v : odlist)
+        this->dlist[i++] = v;
 }
 
 template <typename type> dynlist<type>::~dynlist() {
@@ -79,6 +92,18 @@ template <typename type> dynlist<type>& dynlist<type>::operator=(const dynlist<t
     this->dlist = new type[other_dlist.size];
     for (int i = 0; i < other_dlist.size; i++)
         this->dlist[i] = other_dlist.dlist[i];
+
+    return *this;
+}
+
+template <typename type> dynlist<type>& dynlist<type>::operator=(const std::initializer_list<type> odlist) {
+    this->size = 0;
+    for (auto& v : odlist)
+        this->size++;
+    resize(this->size);
+    int i = 0;
+    for (auto& v : odlist)
+        this->dlist[i++] = v;
 
     return *this;
 }
